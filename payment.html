@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - HardwareStore</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; }
+    .payment-card { max-width: 500px; margin: 40px auto; border-radius: 18px; box-shadow: 0 4px 24px rgba(34,34,34,0.10); }
+    .payment-option { border: 2px solid #eee; border-radius: 12px; padding: 16px; margin-bottom: 18px; cursor: pointer; transition: border 0.2s; }
+    .payment-option.selected, .payment-option:hover { border-color: #f8c146; background: #fffbe6; }
+    .payment-option i { font-size: 1.7rem; color: #f8c146; margin-right: 12px; }
+    .pay-btn { border-radius: 20px; font-weight: 600; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="payment-card bg-white p-4">
+    <h3 class="mb-4 text-center fw-bold">Choose Payment Method</h3>
+    <form id="paymentForm">
+      <div class="payment-option d-flex align-items-center" data-method="card">
+        <i class="bi bi-credit-card"></i>
+        <span>Credit / Debit Card</span>
+      </div>
+      <div class="payment-option d-flex align-items-center" data-method="upi">
+        <i class="bi bi-upc-scan"></i>
+        <span>UPI / QR Code</span>
+      </div>
+      <div class="payment-option d-flex align-items-center" data-method="netbanking">
+        <i class="bi bi-bank"></i>
+        <span>Net Banking</span>
+      </div>
+      <div class="payment-option d-flex align-items-center" data-method="wallet">
+        <i class="bi bi-wallet2"></i>
+        <span>Wallets (Paytm, PhonePe, etc.)</span>
+      </div>
+      <div class="payment-option d-flex align-items-center" data-method="cod">
+        <i class="bi bi-cash"></i>
+        <span>Cash on Delivery</span>
+      </div>
+      <div id="paymentDetails" class="mt-4"></div>
+      <button type="submit" class="btn btn-warning w-100 mt-3 pay-btn">Pay Now</button>
+    </form>
+  </div>
+</div>
+
+<script>
+const options = document.querySelectorAll('.payment-option');
+const details = document.getElementById('paymentDetails');
+let selected = null;
+
+options.forEach(opt => {
+  opt.onclick = () => {
+    options.forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selected = opt.getAttribute('data-method');
+    showDetails(selected);
+  };
+});
+
+function showDetails(method) {
+  if (method === 'card') {
+    details.innerHTML = `
+      <div class='mb-3'><label class='form-label'>Card Number</label><input type='text' class='form-control' maxlength='19' placeholder='1234 5678 9012 3456' required></div>
+      <div class='row'>
+        <div class='col'><label class='form-label'>Expiry</label><input type='text' class='form-control' maxlength='5' placeholder='MM/YY' required></div>
+        <div class='col'><label class='form-label'>CVV</label><input type='password' class='form-control' maxlength='3' placeholder='123' required></div>
+      </div>
+      <div class='mb-3 mt-2'><label class='form-label'>Name on Card</label><input type='text' class='form-control' required></div>
+    `;
+  } else if (method === 'upi') {
+    details.innerHTML = `
+      <div class='mb-3'><label class='form-label'>UPI ID</label><input type='text' class='form-control' placeholder='yourname@upi' required></div>
+      <div class='text-center'><img src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=upi://pay' alt='QR' class='my-2'></div>
+      <div class='text-center text-muted' style='font-size:0.95em'>Or scan QR with your UPI app</div>
+    `;
+  } else if (method === 'netbanking') {
+    details.innerHTML = `
+      <div class='mb-3'><label class='form-label'>Select Bank</label>
+        <select class='form-select' required>
+          <option value=''>Choose Bank</option>
+          <option>SBI</option>
+          <option>HDFC</option>
+          <option>ICICI</option>
+          <option>Axis</option>
+          <option>Kotak</option>
+        </select>
+      </div>
+      <div class='mb-3'><label class='form-label'>Account Number</label><input type='text' class='form-control' required></div>
+    `;
+  } else if (method === 'wallet') {
+    details.innerHTML = `
+      <div class='mb-3'><label class='form-label'>Select Wallet</label>
+        <select class='form-select' required>
+          <option value=''>Choose Wallet</option>
+          <option>Paytm</option>
+          <option>PhonePe</option>
+          <option>Google Pay</option>
+        </select>
+      </div>
+      <div class='mb-3'><label class='form-label'>Mobile Number</label><input type='text' class='form-control' maxlength='10' required></div>
+    `;
+  } else if (method === 'cod') {
+    details.innerHTML = `<div class='alert alert-info'>You will pay in cash when your order is delivered.</div>`;
+  } else {
+    details.innerHTML = '';
+  }
+}
+
+document.getElementById('paymentForm').onsubmit = function(e) {
+  e.preventDefault();
+  if (!selected) {
+    alert('Please select a payment method.');
+    return;
+  }
+  alert('Payment successful! Thank you for your order.');
+  window.location.href = 'index.html';
+};
+</script>
+</body>
+</html>
